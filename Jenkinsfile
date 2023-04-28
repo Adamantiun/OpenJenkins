@@ -9,9 +9,8 @@ pipeline {
     }
 
     triggers {
-        if(triggerMode == 'Daily'){
-            cron('25 15 * * *')
-        } else {
+        cron('29 15 * * *') 
+        if(params.triggerMode == 'Every Commit') {
             pollSCM('*/2 * * * *')
         }
     }
