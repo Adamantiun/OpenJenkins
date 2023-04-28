@@ -14,8 +14,8 @@ pipeline {
     stages {
         stage('Run JMeter tests') {
             steps {
-                cd C:\Users\adanogueira\Desktop\JMeter\apache-jmeter-5.5\bin
-                jmeter.bat -n -t C:\Users\adanogueira\Desktop\JMeter\tutorial-tests\JJintTest.jmx -l C:\Users\adanogueira\Desktop\JMeter\tutorial-tests\TestResult1.jtl -Jserver=${params.serverName}
+                bat "cd C:\Users\adanogueira\Desktop\JMeter\apache-jmeter-5.5\bin"
+                bat "jmeter.bat -n -t C:\Users\adanogueira\Desktop\JMeter\tutorial-tests\JJintTest.jmx -l C:\Users\adanogueira\Desktop\JMeter\tutorial-tests\TestResult1.jtl -Jserver=${params.serverName}"
             }
         }
     }
