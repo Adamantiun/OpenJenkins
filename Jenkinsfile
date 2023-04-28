@@ -9,9 +9,7 @@ pipeline {
     }
 
     triggers {
-        if(triggerMode == 'Daily'){
-            cron('39 12 * * *')
-        }
+        cron(enabled: params.triggerMode == 'Daily', expression: '40 12 * * *')
     }
 
     stages {
