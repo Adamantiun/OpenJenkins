@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     def jmeterCommand = "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -n -t ${WORKSPACE}/${params.testFile} -l C:/Users/adanogueira/Desktop/JMeter/tutorial-tests/TestResult1.jtl -Jserver=${params.serverName}"
-                    // execute the JMeter tests
+                    sh jmeterCommand
                 }
             }
         }
