@@ -11,14 +11,15 @@ pipeline {
     triggers {
         cron(spec: runDaily ? '0 0 * * *' : '')
         pollSCM(scmpoll_spec: params.triggerMode == 'Changes' ? 'H/5 * * * *' : '')
-
     }
 
     stages {
         stage('Run JMeter tests') {
             steps {
-                bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin"
-                bat "jmeter.bat -n -t C:/Users/adanogueira/Desktop/JMeter/tutorial-tests/JJintTest.jmx -l C:/Users/adanogueira/Desktop/JMeter/tutorial-tests/TestResult1.jtl -Jserver=${params.serverName}"
+                script {
+                    def jmeterCommand = "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -n -t C:/Users/adanogueira/Desktop/JMeter/tutorial-tests/JJintTest.jmx -l C:/Users/adanogueira/Desktop/JMeter/tutorial-tests/TestResult1.jtl -Jserver=${params.serverName}"
+                    def result = sh(script: jmeterCommand, returnStatus: true)
+                }
             }
         }
     }
