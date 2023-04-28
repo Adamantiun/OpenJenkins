@@ -10,7 +10,7 @@ pipeline {
         stage('Run JMeter tests') {
             steps {
                 script {
-                    def jmeterCommand = "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -n -t ${WORKSPACE}/${params.testFile} -l C:/Users/adanogueira/Desktop/JMeter/tutorial-tests/TestResult1.jtl -Jserver=${params.serverName}"
+                    def jmeterCommand = "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -n -t ${WORKSPACE}/OpenJenkins/${params.testFile} -l C:/Users/adanogueira/Desktop/JMeter/tutorial-tests/TestResult1.jtl -Jserver=${params.serverName}"
                     sh jmeterCommand
                 }
             }
