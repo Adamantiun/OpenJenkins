@@ -10,7 +10,7 @@ pipeline {
 
     triggers {
         cron(spec: runDaily ? '0 0 * * *' : '')
-        ppollSCM(scmpoll_spec: params.triggerMode == 'Changes' ? 'H/5 * * * *' : '')
+        pollSCM(scmpoll_spec: params.triggerMode == 'Changes' ? 'H/5 * * * *' : '')
 
     }
 
