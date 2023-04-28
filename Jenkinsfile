@@ -9,7 +9,11 @@ pipeline {
     }
 
     triggers {
-        cron(enabled: params.triggerMode == 'Daily', expression: '40 12 * * *')
+        if(triggerMode == 'Daily'){
+            cron('25 15 * * *')
+        } else {
+            pollSCM('*/2 * * * *')
+        }
     }
 
     stages {
