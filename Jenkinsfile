@@ -5,6 +5,13 @@ pipeline {
         string(name: 'serverName', defaultValue: 'www.ojogos.com.br', description: 'Enter the name of the server to run the tests on')
         string(name: 'pathName', defaultValue: '/jogo/sky-block', description: 'Enter the path to run the tests on')
         string(name: 'testFile', defaultValue: 'JJintTest.jmx', description: 'Enter the name of the test file')
+        choice(name: 'triggerMode', choices: ['Daily', 'Every Commit'], description: 'Select the trigger mode')
+    }
+
+    triggers {
+        if(triggerMode == 'Daily'){
+            cron('39 12 * * *')
+        }
     }
 
     stages {
