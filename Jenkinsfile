@@ -4,11 +4,13 @@ pipeline {
     parameters {
         string(name: 'serverName', defaultValue: '', description: 'Enter the name of the server to run the tests on')
         choice(name: 'triggerMode', choices: ['Daily', 'Changes'], description: 'Select the trigger mode')
+        booleanParam(name: 'runDaily', defaultValue: false, description: 'Run the pipeline once a day')
+        booleanParam(name: 'runOnChanges', defaultValue: false, description: 'Run the pipeline on changes to JMeter tests')
     }
 
     triggers {
-        cron(enabled: params.triggerMode == 'Daily', expression: '0 0 * * *')
-        pollSCM(enabled: params.triggerMode == 'Changes', cron: 'H/5 * * * *')
+        cron(spec: runDaily ? '0 0 * * *' : '')
+        pollSCM(spec: runOnChanges ? 'H/5 * * * *' : '')
     }
 
     stages {
@@ -20,5 +22,3 @@ pipeline {
         }
     }
 }
-
-
