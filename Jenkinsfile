@@ -8,8 +8,6 @@ pipeline {
         string(name: 'testFile', defaultValue: 'JJintTest.jmx', description: 'Enter the name of the test file')
         choice(name: 'triggerMode', choices: ['Daily', 'Every Commit'], description: 'Select the trigger mode')
     }
-    
-    triggers {cron('57 14 * * *') } 
 
     stages {
         stage('Run JMeter tests') {
@@ -17,6 +15,8 @@ pipeline {
                 script {
                     if (params.triggerMode == 'Every Commit') {
                         pipelineTriggers([pollSCM('*/2 * * * *')])
+                    } else {
+                        pipelineTriggers([cron('02 15 * * *')])
                     }
                     bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l C:/Users/adanogueira/Desktop/JMeter/tutorial-tests/TestResult1.jtl"
                 }
