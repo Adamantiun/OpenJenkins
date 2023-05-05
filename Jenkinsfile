@@ -16,7 +16,7 @@ pipeline {
                     if (params.triggerMode == 'Every Commit') {
                         pipelineTriggers([pollSCM('*/2 * * * *')])
                     } else {
-                        pipelineTriggers([cron('05 15 * * *')])
+                        pipelineTriggers([cron('11 15 * * *')])
                     }
                     bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l C:/Users/adanogueira/Desktop/JMeter/tutorial-tests/TestResult1.jtl"
                 }
