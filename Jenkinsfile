@@ -10,7 +10,7 @@ pipeline {
         choice(name: 'triggerMode', choices: ['Daily', 'Every Commit', 'Every Minute'], description: 'Select the trigger mode')
     }
 
-    triggers { cron('* * * * *') }
+    triggers { cron('0/15 * * * *') }
 
     stages {
         stage('Run JMeter tests') {
