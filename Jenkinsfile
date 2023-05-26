@@ -10,10 +10,6 @@ pipeline {
         choice(name: 'triggerMode', choices: ['Daily', 'Every Commit', 'Every Minute'], description: 'Select the trigger mode')
     }
 
-    triggers {
-        pollSCM('*/2 * * * *') // Default SCM polling interval to check for changes every 2 minutes
-    }
-
     stages {
         stage('Trigger Job') {
             steps {
@@ -25,6 +21,7 @@ pipeline {
                             cron('* * * * *')
                             break
                         case 'Every Commit':
+                            pollSCM('*/2 * * * *')
                             echo 'Running the job on every commit'
                             break
                         case 'Daily':
