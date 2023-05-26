@@ -10,19 +10,36 @@ pipeline {
         choice(name: 'triggerMode', choices: ['Daily', 'Every Commit', 'Every Minute'], description: 'Select the trigger mode')
     }
 
-    triggers {}
+    triggers {
+        cron('* * * * *') // Default trigger to run every minute
+        pollSCM('*/2 * * * *') // Default SCM polling interval to check for changes every 2 minutes
+    }
 
     stages {
+        stage('Trigger Job') {
+            steps {
+                script {
+                    switch (params.triggerMode) {
+                        case 'Every Minute':
+                            echo 'Running the job every minute'
+                            break
+                        case 'Every Commit':
+                            echo 'Running the job on every commit'
+                            currentBuild.rawBuild.addAction(new hudson.triggers.SCMTrigger.SCMTriggerCause())
+                            break
+                        case 'Daily':
+                            echo 'Running the job daily at 11:00'
+                            cron('00 11 * * *')
+                            break
+                        default:
+                            error('Invalid trigger type selected')
+                    }
+                }
+            }
+        }
         stage('Run JMeter tests') {
             steps {
                 script {
-                    if (params.triggerMode == 'Every Commit') {
-                        pipelineTriggers([pollSCM('*/2 * * * *')])
-                    } else if (params.triggerMode == 'Every Minute'){
-                        pipelineTriggers([cron('* * * * *')])
-                    } else {
-                        pipelineTriggers([cron('30 10 * * *')])
-                    }
                     if(params.testFile != '')
                         bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l C:/Users/adanogueira/Desktop/JMeter/tutorial-tests/TestResult1.jtl"
                     else
