@@ -11,7 +11,6 @@ pipeline {
     }
 
     triggers {
-        cron('* * * * *') // Default trigger to run every minute
         pollSCM('*/2 * * * *') // Default SCM polling interval to check for changes every 2 minutes
     }
 
@@ -22,13 +21,15 @@ pipeline {
                     switch (params.triggerMode) {
                         case 'Every Minute':
                             echo 'Running the job every minute'
+                            build.actions.removeAll(hudson.triggers.SCMTriggerAction)
+                            cron('* * * * *')
                             break
                         case 'Every Commit':
                             echo 'Running the job on every commit'
-                            currentBuild.rawBuild.addAction(new hudson.triggers.SCMTrigger.SCMTriggerCause())
                             break
                         case 'Daily':
                             echo 'Running the job daily at 11:00'
+                            build.actions.removeAll(hudson.triggers.SCMTriggerAction)
                             cron('00 11 * * *')
                             break
                         default:
