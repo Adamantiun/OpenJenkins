@@ -17,7 +17,6 @@ pipeline {
                     switch (params.triggerMode) {
                         case 'Every Minute':
                             echo 'Running the job every minute'
-                            build.actions.removeAll(hudson.triggers.SCMTriggerAction)
                             cron('* * * * *')
                             break
                         case 'Every Commit':
@@ -26,7 +25,6 @@ pipeline {
                             break
                         case 'Daily':
                             echo 'Running the job daily at 11:00'
-                            build.actions.removeAll(hudson.triggers.SCMTriggerAction)
                             cron('00 11 * * *')
                             break
                         default:
