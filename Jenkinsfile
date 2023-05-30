@@ -30,7 +30,7 @@ pipeline {
 }
 
 
-def getTrigger(triggerMode){
+def getCronTrigger(triggerMode){
     switch (triggerMode) {
         case 'Every Minute':
             echo 'Running the job every minute'
