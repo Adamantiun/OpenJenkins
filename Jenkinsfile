@@ -11,7 +11,8 @@ pipeline {
     }
 
     triggers {
-        getTrigger(params.triggerMode)
+        cron(getCronTrigger(params.triggerMode))
+        pollSCM(getSCMTrigger(params.triggerMode))
     }
 
     stages {
@@ -33,14 +34,22 @@ def getTrigger(triggerMode){
     switch (triggerMode) {
         case 'Every Minute':
             echo 'Running the job every minute'
-            return cron('* * * * *')
+            return '* * * * *'
         case 'Every Commit':
-            echo 'Running the job on every commit'
-            return pollSCM('*/2 * * * *')
+            return '0 0 31 2 *'
         case 'Daily':
-            echo 'Running the job daily at 11:00'
-            return cron('40 15 * * *')
+            echo 'Running the job daily at 15:40'
+            return '40 15 * * *'
         default:
             error('Invalid trigger type selected')
+    }
+}
+
+def getSCMTrigger (triggerMode){
+    switch (triggerMode) {
+        case 'Every Commit':
+            return '*/2 * * * *'
+        default:
+            return '0 0 31 2 *'
     }
 }
