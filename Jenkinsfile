@@ -10,29 +10,11 @@ pipeline {
         choice(name: 'triggerMode', choices: ['Daily', 'Every Commit', 'Every Minute'], description: 'Select the trigger mode')
     }
 
+    triggers {
+        getTrigger(params.triggerMode)
+    }
+
     stages {
-        stage('Trigger Job') {
-            steps {
-                script {
-                    switch (params.triggerMode) {
-                        case 'Every Minute':
-                            echo 'Running the job every minute'
-                            cron('* * * * *')
-                            break
-                        case 'Every Commit':
-                            pollSCM('*/2 * * * *')
-                            echo 'Running the job on every commit'
-                            break
-                        case 'Daily':
-                            echo 'Running the job daily at 11:00'
-                            cron('00 11 * * *')
-                            break
-                        default:
-                            error('Invalid trigger type selected')
-                    }
-                }
-            }
-        }
         stage('Run JMeter tests') {
             steps {
                 script {
@@ -43,5 +25,22 @@ pipeline {
                 }
             }
         }
+    }
+}
+
+
+def getTrigger(triggerMode){
+    switch (triggerMode) {
+        case 'Every Minute':
+            echo 'Running the job every minute'
+            return cron('* * * * *')
+        case 'Every Commit':
+            echo 'Running the job on every commit'
+            return pollSCM('*/2 * * * *')
+        case 'Daily':
+            echo 'Running the job daily at 11:00'
+            return cron('40 15 * * *')
+        default:
+            error('Invalid trigger type selected')
     }
 }
