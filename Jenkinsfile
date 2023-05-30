@@ -1,5 +1,3 @@
-@Library('jenkins-pipeline-email-ext@2.82') _
-
 pipeline {
     agent any
     
