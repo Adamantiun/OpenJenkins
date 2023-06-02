@@ -12,8 +12,8 @@ pipeline {
     }
 
     triggers {
-        cron(getCronTrigger(params.triggerMode))
-        pollSCM(getSCMTrigger(params.triggerMode))
+        cron(getCronTrigger(params.triggerMode, WORKSPACE))
+        pollSCM(getSCMTrigger(params.triggerMode, WORKSPACE))
     }
 
     stages {
@@ -54,7 +54,7 @@ pipeline {
 }
 
 
-def getCronTrigger(triggerMode){
+def getCronTrigger(triggerMode, WORKSPACE){
     load "${WORKSPACE}/env_vars.groovy"
     if(triggerMode == 'Please Select')
         triggerMode = env.triggerMode
@@ -75,7 +75,7 @@ def getCronTrigger(triggerMode){
     }
 }
 
-def getSCMTrigger (triggerMode){
+def getSCMTrigger (triggerMode, WORKSPACE){
     if(triggerMode == 'Please Select')
         triggerMode = env.triggerMode
     switch (triggerMode) {
