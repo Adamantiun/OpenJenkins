@@ -55,35 +55,39 @@ pipeline {
 
 
 def getCronTrigger(triggerMode){
-    load "env_vars.groovy"
-    if(triggerMode == 'Please Select')
-        triggerMode = env.triggerMode
-    switch (triggerMode) {
-        case 'Every Minute':
-            echo 'Running the job every minute'
-            return '* * * * *'
-        case 'Every Commit':
-            return '0 0 31 2 *'
-        case 'Single Trigger':
-            echo 'Running the job only once'
-            return '0 0 31 2 *'
-        case 'Daily':
-            echo 'Running the job daily at 15:40'
-            return '40 15 * * *'
-        default:
-            error('Invalid trigger type selected')
+    node{
+        load "env_vars.groovy"
+        if(triggerMode == 'Please Select')
+            triggerMode = env.triggerMode
+        switch (triggerMode) {
+            case 'Every Minute':
+                echo 'Running the job every minute'
+                return '* * * * *'
+            case 'Every Commit':
+                return '0 0 31 2 *'
+            case 'Single Trigger':
+                echo 'Running the job only once'
+                return '0 0 31 2 *'
+            case 'Daily':
+                echo 'Running the job daily at 15:40'
+                return '40 15 * * *'
+            default:
+                error('Invalid trigger type selected')
+        }
     }
 }
 
 def getSCMTrigger (triggerMode){
-    load "env_vars.groovy"
-    if(triggerMode == 'Please Select')
-        triggerMode = env.triggerMode
-    switch (triggerMode) {
-        case 'Every Commit':
-            echo 'Running the job every commit'
-            return '*/2 * * * *'
-        default:
-            return '0 0 31 2 *'
+    node{
+        load "env_vars.groovy"
+        if(triggerMode == 'Please Select')
+            triggerMode = env.triggerMode
+        switch (triggerMode) {
+            case 'Every Commit':
+                echo 'Running the job every commit'
+                return '*/2 * * * *'
+            default:
+                return '0 0 31 2 *'
+        }
     }
 }
