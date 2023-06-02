@@ -12,8 +12,8 @@ pipeline {
     }
 
     triggers {
-        cron(getCronTrigger(params.triggerMode, WORKSPACE))
-        pollSCM(getSCMTrigger(params.triggerMode, WORKSPACE))
+        cron(getCronTrigger(params.triggerMode))
+        pollSCM(getSCMTrigger(params.triggerMode))
     }
 
     stages {
