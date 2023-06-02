@@ -11,28 +11,24 @@ pipeline {
         string(name: 'email', defaultValue: 'adam.g.nog@gmail.com', description: 'Enter the email address to send JMeter results')
     }
 
-    triggers {
-        cron(getCronTrigger(params.triggerMode))
-        pollSCM(getSCMTrigger(params.triggerMode))
-    }
-
     stages {
         stage('Run JMeter tests') {
             steps {
                 script {
                     load "env_vars.groovy"
-                    if(params.triggerMode != 'Please Select'){
-                        env.protocol = params.protocol
-                        env.serverName = params.serverName
-                        env.pathName = params.pathName
-                        env.requestType = params.requestType
-                        env.testFile = params.testFile
-                        env.email = params.email
+                    if(params.triggerMode == 'Please Select'){
+                        params.protocol = env.protocol
+                        params.serverName = env.serverName
+                        params.pathName = env.pathName
+                        params.requestType = env.requestType
+                        params.testFile = env.testFile
+                        params.triggerMode = env.triggerMode
+                        params.email = env.email
                     }
                     if(params.testFile != '')
-                        bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${env.serverName} -JpathName=${env.pathName} -JprotocolType =${env.protocol}  -n -t ${WORKSPACE}/${env.testFile} -l TestResult.jtl"
+                        bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l TestResult.jtl"
                     else
-                        bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${env.serverName} -JpathName=${env.pathName} -JprotocolType =${env.protocol}  -n -t ${WORKSPACE}/${env.requestType}Test.jmx -l TestResult.jtl"
+                        bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.requestType}Test.jmx -l TestResult.jtl"
                 }
             }
         }
@@ -50,14 +46,17 @@ pipeline {
                 }
             }
         }
+        stage('Setup Triggers'){
+            triggers {
+                cron(getCronTrigger(params.triggerMode))
+                pollSCM(getSCMTrigger(params.triggerMode))
+            }
+        }
     }
 }
 
 
 def getCronTrigger(triggerMode){
-    String previousTrigger = new File('triggerMode.txt').text
-    if(triggerMode == 'Please Select')
-        triggerMode = previousTrigger
     switch (triggerMode) {
         case 'Every Minute':
             echo 'Running the job every minute'
@@ -76,9 +75,6 @@ def getCronTrigger(triggerMode){
 }
 
 def getSCMTrigger (triggerMode){
-    String previousTrigger = new File('triggerMode.txt').text
-    if(triggerMode == 'Please Select')
-        triggerMode = previousTrigger
     switch (triggerMode) {
         case 'Every Commit':
             echo 'Running the job every commit'
