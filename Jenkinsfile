@@ -7,8 +7,12 @@ pipeline {
         string(name: 'pathName', defaultValue: '/fact', description: 'Enter the path to run the tests on')
         choice(name: 'requestType', choices: ['Get', 'Post', 'Put', 'Delete'], description: 'Select the request type to be tested')
         string(name: 'testFile', defaultValue: '', description: 'Enter the name of the test file, if empty will use default files based on ResquestType')
-        choice(name: 'triggerMode', choices: ['Daily', 'Every Commit', 'Every Minute'], description: 'Select the trigger mode')
+        choice(name: 'triggerMode', choices: ['', 'Daily', 'Every Commit', 'Every Minute'], description: 'Select the trigger mode')
         string(name: 'email', defaultValue: 'adam.g.nog@gmail.com', description: 'Enter the email address to send JMeter results')
+    }
+
+    environment{
+        load '${WORKSPACE}/env_vars.groovy'
     }
 
     triggers {
