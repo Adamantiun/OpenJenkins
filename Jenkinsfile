@@ -38,14 +38,16 @@ pipeline {
         }
         stage('Email test results') {
             steps {
-                load "${WORKSPACE}/env_vars.groovy"
-                if(params.triggerMode != 'Please Select'){
-                    env.email = params.email
+                script {
+                    load "${WORKSPACE}/env_vars.groovy"
+                    if(params.triggerMode != 'Please Select'){
+                        env.email = params.email
+                    }
+                    emailext to: env.email,
+                        subject: 'JMeter Results',
+                        body: 'Attached are the JMeter test results.',
+                        attachmentsPattern: 'TestResult.jtl'
                 }
-                emailext to: env.email,
-                    subject: 'JMeter Results',
-                    body: 'Attached are the JMeter test results.',
-                    attachmentsPattern: 'TestResult.jtl'
             }
         }
     }
