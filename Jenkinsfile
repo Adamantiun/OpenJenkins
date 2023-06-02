@@ -11,6 +11,10 @@ pipeline {
         string(name: 'email', defaultValue: 'adam.g.nog@gmail.com', description: 'Enter the email address to send JMeter results')
     }
 
+    environment{
+        finalTriggerMode = params.triggerMode;
+    }
+
     stages {
         stage('Run JMeter tests') {
             steps {
@@ -22,9 +26,10 @@ pipeline {
                         params.pathName = env.pathName
                         params.requestType = env.requestType
                         params.testFile = env.testFile
-                        params.triggerMode = env.triggerMode
+                        finalTriggerMode = env.triggerMode
                         params.email = env.email
                     }
+                    echo "${finalTriggerMode}"
                     if(params.testFile != '')
                         bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l TestResult.jtl"
                     else
@@ -49,13 +54,14 @@ pipeline {
     }
 
     triggers {
-        cron(getCronTrigger(params.triggerMode))
-        pollSCM(getSCMTrigger(params.triggerMode))
+        cron(getCronTrigger(finalTriggerMode))
+        pollSCM(getSCMTrigger(finalTriggerMode))
     }
 }
 
 
 def getCronTrigger(triggerMode){
+    echo " - ${triggerMode}"
     switch (triggerMode) {
         case 'Every Minute':
             echo 'Running the job every minute'
