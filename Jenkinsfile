@@ -20,7 +20,7 @@ pipeline {
         stage('Run JMeter tests') {
             steps {
                 script {
-                    load "${WORKSPACE}/env_vars.groovy"
+                    load "env_vars.groovy"
                     if(params.triggerMode != 'Please Select'){
                         env.protocol = params.protocol
                         env.serverName = params.serverName
@@ -39,7 +39,7 @@ pipeline {
         stage('Email test results') {
             steps {
                 script {
-                    load "${WORKSPACE}/env_vars.groovy"
+                    load "env_vars.groovy"
                     if(params.triggerMode != 'Please Select'){
                         env.email = params.email
                     }
@@ -54,8 +54,8 @@ pipeline {
 }
 
 
-def getCronTrigger(triggerMode, WORKSPACE){
-    load "${WORKSPACE}/env_vars.groovy"
+def getCronTrigger(triggerMode){
+    load "env_vars.groovy"
     if(triggerMode == 'Please Select')
         triggerMode = env.triggerMode
     switch (triggerMode) {
@@ -75,7 +75,8 @@ def getCronTrigger(triggerMode, WORKSPACE){
     }
 }
 
-def getSCMTrigger (triggerMode, WORKSPACE){
+def getSCMTrigger (triggerMode){
+    load "env_vars.groovy"
     if(triggerMode == 'Please Select')
         triggerMode = env.triggerMode
     switch (triggerMode) {
