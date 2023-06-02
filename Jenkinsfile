@@ -47,11 +47,11 @@ pipeline {
             }
         }
     }
-}
 
-triggers {
-    cron(getCronTrigger(params.triggerMode))
-    pollSCM(getSCMTrigger(params.triggerMode))
+    triggers {
+        cron(getCronTrigger(params.triggerMode))
+        pollSCM(getSCMTrigger(params.triggerMode))
+    }
 }
 
 
