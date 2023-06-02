@@ -29,14 +29,10 @@ pipeline {
         }
         stage('Email test results') {
             steps {
-                script {
-                    emailext(
-                        to: params.email,
-                        subject: 'JMeter Results',
-                        body: 'Attached are the JMeter test results.',
-                        attachmentsPattern: '${WORKSPACE}/TestResult.jtl'
-                    )
-                }
+                mail to: params.email,
+                    subject: 'JMeter Results',
+                    body: 'Attached are the JMeter test results.',
+                    attachmentsPattern: '${WORKSPACE}/TestResult.jtl'
             }
         }
     }
@@ -61,6 +57,7 @@ def getCronTrigger(triggerMode){
 def getSCMTrigger (triggerMode){
     switch (triggerMode) {
         case 'Every Commit':
+            echo 'Running the job every commit'
             return '*/2 * * * *'
         default:
             return '0 0 31 2 *'
