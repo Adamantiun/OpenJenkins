@@ -20,7 +20,7 @@ pipeline {
         stage('Run JMeter tests') {
             steps {
                 script {
-                    load '${WORKSPACE}/env_vars.groovy'
+                    load "${WORKSPACE}/env_vars.groovy"
                     if(params.testFile != '')
                         bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l TestResult.jtl"
                     else
