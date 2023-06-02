@@ -29,10 +29,10 @@ pipeline {
         }
         stage('Email test results') {
             steps {
-                mail to: params.email,
+                emailext to: params.email,
                     subject: 'JMeter Results',
                     body: 'Attached are the JMeter test results.',
-                    attachmentsPattern: 'TestResult.jtl'
+                    attachmentsPattern: '${WORKSPACE}/TestResult.jtl'
             }
         }
     }
