@@ -32,7 +32,7 @@ pipeline {
                 mail to: params.email,
                     subject: 'JMeter Results',
                     body: 'Attached are the JMeter test results.',
-                    attachmentsPattern: '${WORKSPACE}/TestResult.jtl'
+                    attachmentsPattern: 'TestResult.jtl'
             }
         }
     }
