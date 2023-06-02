@@ -47,9 +47,11 @@ pipeline {
             }
         }
         stage('Setup Triggers'){
-            triggers {
-                cron(getCronTrigger(params.triggerMode))
-                pollSCM(getSCMTrigger(params.triggerMode))
+            steps{
+                triggers {
+                    cron(getCronTrigger(params.triggerMode))
+                    pollSCM(getSCMTrigger(params.triggerMode))
+                }
             }
         }
     }
