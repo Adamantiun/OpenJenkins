@@ -11,10 +11,6 @@ pipeline {
         string(name: 'email', defaultValue: 'adam.g.nog@gmail.com', description: 'Enter the email address to send JMeter results')
     }
 
-    environment{
-        load '${WORKSPACE}/env_vars.groovy'
-    }
-
     triggers {
         cron(getCronTrigger(params.triggerMode))
         pollSCM(getSCMTrigger(params.triggerMode))
@@ -24,6 +20,7 @@ pipeline {
         stage('Run JMeter tests') {
             steps {
                 script {
+                    load '${WORKSPACE}/env_vars.groovy'
                     if(params.testFile != '')
                         bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l TestResult.jtl"
                     else
