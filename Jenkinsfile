@@ -21,9 +21,9 @@ pipeline {
             steps {
                 script {
                     if(params.testFile != '')
-                        bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l ${WORKSPACE}/TestResult.jtl"
+                        bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l TestResult.jtl"
                     else
-                        bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.requestType}Test.jmx -l ${WORKSPACE}/TestResult.jtl"
+                        bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.requestType}Test.jmx -l TestResult.jtl"
                 }
             }
         }
@@ -32,7 +32,7 @@ pipeline {
                 emailext to: params.email,
                     subject: 'JMeter Results',
                     body: 'Attached are the JMeter test results.',
-                    attachmentsPattern: '${WORKSPACE}/TestResult.jtl'
+                    attachmentsPattern: 'TestResult.jtl'
             }
         }
     }
