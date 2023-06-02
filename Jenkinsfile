@@ -12,7 +12,7 @@ pipeline {
     }
 
     environment{
-        finalTriggerMode = params.triggerMode;
+        finalTriggerMode = "${params.triggerMode}";
     }
 
     stages {
