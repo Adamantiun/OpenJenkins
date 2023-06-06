@@ -45,11 +45,12 @@ pipeline {
         stage('Email test results') {
             steps {
                 script {
+                    email = params.email
                     if(params.triggerMode != 'Please Select'){
                         load "env_vars.groovy"
-                        env.email = params.email
+                        email = env.email
                     }
-                    emailext to: env.email,
+                    emailext to: email,
                         subject: 'JMeter Results',
                         body: 'Attached are the JMeter test results.',
                         attachmentsPattern: 'TestResult.jtl'
