@@ -102,20 +102,22 @@ pipeline {
                     }
 
                     if(params.triggerMode != 'Please Select'){
-                        def envVarsContent = """
-                            env.protocol='${params.protocol}'
-                            env.serverName='${params.serverName}'
-                            env.pathName='${params.pathName}'
-                            env.requestType='${params.requestType}'
-                            env.testFile='${params.testFile}'
-                            env.triggerMode='${params.triggerMode}'
-                            env.email='${params.email}'
-                        """
-
-                        writeFile file: 'env_vars.groovy', text: envVarsContent
+                        writeFile file: 'env_vars.groovy', text: getEnvVarsContent(params)
                     }
                 }
             }
         }
     }
+}
+
+def getEnvVarsContent(params){
+    return """
+env.protocol='${params.protocol}'
+env.serverName='${params.serverName}'
+env.pathName='${params.pathName}'
+env.requestType='${params.requestType}'
+env.testFile='${params.testFile}'
+env.triggerMode='${params.triggerMode}'
+env.email='${params.email}'
+"""
 }
