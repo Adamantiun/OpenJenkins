@@ -70,6 +70,7 @@ pipeline {
                                         spec  : "* * * * *"
                                 ]])
                             ])
+                            break
                         case 'Every Commit':
                             echo 'Running the job every commit'
                             properties([
@@ -80,8 +81,10 @@ pipeline {
                                         useGitHubHooks: true
                                 ]])
                             ])
+                            break
                         case 'Single Trigger':
                             echo 'Running the job only once'
+                            break
                         case 'Daily':
                             echo 'Running the job daily at 15:40'
                             properties([
@@ -90,8 +93,10 @@ pipeline {
                                         spec  : "40 15 * * *"
                                 ]])
                             ])
+                            break
                         default:
                             error('Invalid trigger type selected')
+                            break
                     }
 
                     if(params.triggerMode != 'Please Select'){
