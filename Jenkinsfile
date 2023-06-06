@@ -23,9 +23,12 @@ pipeline {
                     if(params.testFile == '')
                         testFile = "${WORKSPACE}/${params.requestType}Test.jmx"
 
-                    load "env_vars.groovy"
-
                     if(params.triggerMode == 'Please Select'){
+                        try{ load "env_vars.groovy" }
+                        catch (Exception ex) {
+                            echo "missing env_vars.groovy - likely didn't select trigger mode in the first build"
+                            throw ex
+                        }
                         protocol = env.protocol
                         serverName = env.serverName
                         pathName = env.pathName
@@ -42,8 +45,8 @@ pipeline {
         stage('Email test results') {
             steps {
                 script {
-                    load "env_vars.groovy"
                     if(params.triggerMode != 'Please Select'){
+                        load "env_vars.groovy"
                         env.email = params.email
                     }
                     emailext to: env.email,
