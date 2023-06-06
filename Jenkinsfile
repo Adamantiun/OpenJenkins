@@ -92,7 +92,7 @@ pipeline {
                             properties([
                                 pipelineTriggers([[
                                         $class: 'hudson.triggers.TimerTrigger',
-                                        spec  : "40 15 * * *"
+                                        scmpoll_spec  : "40 15 * * *"
                                 ]])
                             ])
                             break
