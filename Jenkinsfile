@@ -15,19 +15,27 @@ pipeline {
         stage('Run JMeter tests') {
             steps {
                 script {
+                    protocol = params.protocol
+                    serverName = params.serverName
+                    pathName = params.pathName
+                    requestType = params.requestType
+                    testFile = "${WORKSPACE}/${params.testFile}"
+                    if(params.testFile == '')
+                        testFile = "${WORKSPACE}/${params.requestType}Test.jmx"
+
                     load "env_vars.groovy"
+
                     if(params.triggerMode == 'Please Select'){
-                        params.protocol = env.protocol
-                        params.serverName = env.serverName
-                        params.pathName = env.pathName
-                        params.requestType = env.requestType
-                        params.testFile = env.testFile
-                        params.email = env.email
+                        protocol = env.protocol
+                        serverName = env.serverName
+                        pathName = env.pathName
+                        requestType = env.requestType
+                        testFile = "${WORKSPACE}/${env.testFile}"
+                        if(env.testFile == '')
+                            testFile = "${WORKSPACE}/${env.requestType}Test.jmx"
                     }
-                    if(params.testFile != '')
-                        bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l TestResult.jtl"
-                    else
-                        bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.requestType}Test.jmx -l TestResult.jtl"
+
+                    bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}  -n -t ${testFile} -l TestResult.jtl"
                 }
             }
         }
