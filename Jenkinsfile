@@ -79,10 +79,8 @@ pipeline {
                             echo 'Running the job every commit'
                             properties([
                                 pipelineTriggers([[
-                                        $class: 'org.jenkinsci.plugins.ghprb.GhprbTrigger',
-                                        triggerOnPush: true,
-                                        cron: '*/2 * * * *',
-                                        useGitHubHooks: true
+                                        $class: 'hudson.triggers.SCMTrigger',
+                                        spec  : "*/2 * * * *"
                                 ]])
                             ])
                             break
