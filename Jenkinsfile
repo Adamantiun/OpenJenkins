@@ -52,7 +52,7 @@ pipeline {
             }
         }
         stage('Set up triggers'){
-            step{
+            steps{
                 script{
                     properties([
                         pipelineTriggers([[
