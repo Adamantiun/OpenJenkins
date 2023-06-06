@@ -26,7 +26,7 @@ pipeline {
                     if(params.triggerMode == 'Please Select'){
                         try{ load "env_vars.groovy" }
                         catch (Exception ex) {
-                            echo "missing env_vars.groovy - likely didn't select trigger mode in the first build"
+                            echo "ERROR : missing env_vars.groovy - likely didn't select trigger mode in the first ever build"
                             throw ex
                         }
                         protocol = env.protocol
@@ -118,35 +118,5 @@ pipeline {
                 }
             }
         }
-    }
-}
-
-
-def getCronTrigger(triggerMode){
-    echo " - ${triggerMode}"
-    switch (triggerMode) {
-        case 'Every Minute':
-            echo 'Running the job every minute'
-            return '* * * * *'
-        case 'Every Commit':
-            return '0 0 31 2 *'
-        case 'Single Trigger':
-            echo 'Running the job only once'
-            return '0 0 31 2 *'
-        case 'Daily':
-            echo 'Running the job daily at 15:40'
-            return '40 15 * * *'
-        default:
-            error('Invalid trigger type selected')
-    }
-}
-
-def getSCMTrigger (triggerMode){
-    switch (triggerMode) {
-        case 'Every Commit':
-            echo 'Running the job every commit'
-            return '*/2 * * * *'
-        default:
-            return '0 0 31 2 *'
     }
 }
