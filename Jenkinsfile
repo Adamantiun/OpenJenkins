@@ -7,7 +7,7 @@ pipeline {
         string(name: 'pathName', defaultValue: '/fact', description: 'Enter the path to run the tests on')
         choice(name: 'requestType', choices: ['Get', 'Post', 'Put', 'Delete'], description: 'Select the request type to be tested')
         string(name: 'testFile', defaultValue: '', description: 'Enter the name of the test file, if empty will use default files based on ResquestType')
-        choice(name: 'triggerMode', choices: ['Please Select', 'Single Trigger', 'Daily', 'Every Commit', 'Every Minute'], description: 'Select the trigger mode')
+        choice(name: 'triggerMode', choices: ['Please Select', 'Single Trigger', 'Daily', 'Every Commit', 'Every Minute'], description: 'Select the trigger mode, if not selected will use last used trigger mode')
         string(name: 'email', defaultValue: 'adam.g.nog@gmail.com', description: 'Enter the email address to send JMeter results')
     }
 
@@ -92,6 +92,20 @@ pipeline {
                             ])
                         default:
                             error('Invalid trigger type selected')
+                    }
+
+                    if(params.triggerMode != 'Please Select'){
+                        def envVarsContent = """
+                            env.protocol='${params.protocol}'
+                            env.serverName='${params.serverName}'
+                            env.pathName='${params.pathName}'
+                            env.requestType='${params.requestType}'
+                            env.testFile='${params.testFile}'
+                            env.triggerMode='${params.triggerMode}'
+                            env.email='${params.email}'
+                        """
+
+                        writeFile file: 'env_vars.groovy', text: envVarsContent
                     }
                 }
             }
