@@ -11,10 +11,6 @@ pipeline {
         string(name: 'email', defaultValue: 'adam.g.nog@gmail.com', description: 'Enter the email address to send JMeter results')
     }
 
-    environment{
-        finalTriggerMode = "${params.triggerMode}";
-    }
-
     stages {
         stage('Run JMeter tests') {
             steps {
@@ -26,10 +22,8 @@ pipeline {
                         params.pathName = env.pathName
                         params.requestType = env.requestType
                         params.testFile = env.testFile
-                        finalTriggerMode = env.triggerMode
                         params.email = env.email
                     }
-                    echo "${finalTriggerMode}"
                     if(params.testFile != '')
                         bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${params.serverName} -JpathName=${params.pathName} -JprotocolType =${params.protocol}  -n -t ${WORKSPACE}/${params.testFile} -l TestResult.jtl"
                     else
@@ -51,15 +45,46 @@ pipeline {
                 }
             }
         }
-        stage('Set up triggers'){
+        stage('Set up next build'){
             steps{
                 script{
-                    properties([
-                        pipelineTriggers([[
-                                $class: 'hudson.triggers.TimerTrigger',
-                                spec  : "*/2 * * * *"
-                        ]])
-                    ])
+                    triggerMode = params.triggerMode
+                    if(triggerMode == 'Please Select'){
+                        load "env_vars.groovy"
+                        triggerMode = env.triggerMode
+                    }
+                    switch (triggerMode) {
+                        case 'Every Minute':
+                        echo 'Running the job every minute'
+                            properties([
+                                pipelineTriggers([[
+                                        $class: 'hudson.triggers.TimerTrigger',
+                                        spec  : "* * * * *"
+                                ]])
+                            ])
+                        case 'Every Commit':
+                            echo 'Running the job every commit'
+                            properties([
+                                pipelineTriggers([[
+                                        $class: 'org.jenkinsci.plugins.ghprb.GhprbTrigger',
+                                        triggerOnPush: true,
+                                        cron: '*/2 * * * *',
+                                        useGitHubHooks: true
+                                ]])
+                            ])
+                        case 'Single Trigger':
+                            echo 'Running the job only once'
+                        case 'Daily':
+                            echo 'Running the job daily at 15:40'
+                            properties([
+                                pipelineTriggers([[
+                                        $class: 'hudson.triggers.TimerTrigger',
+                                        spec  : "40 15 * * *"
+                                ]])
+                            ])
+                        default:
+                            error('Invalid trigger type selected')
+                    }
                 }
             }
         }
