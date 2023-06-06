@@ -46,7 +46,7 @@ pipeline {
             steps {
                 script {
                     email = params.email
-                    if(params.triggerMode != 'Please Select'){
+                    if(params.triggerMode == 'Please Select'){
                         load "env_vars.groovy"
                         email = env.email
                     }
