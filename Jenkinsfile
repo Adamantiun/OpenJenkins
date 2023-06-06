@@ -51,11 +51,18 @@ pipeline {
                 }
             }
         }
-    }
-
-    triggers {
-        cron(getCronTrigger(finalTriggerMode))
-        pollSCM(getSCMTrigger(finalTriggerMode))
+        stage('Set up triggers'){
+            step{
+                script{
+                    properties([
+                        pipelineTriggers([[
+                                $class: 'hudson.triggers.TimerTrigger',
+                                spec  : "*/2 * * * *"
+                        ]])
+                    ])
+                }
+            }
+        }
     }
 }
 
