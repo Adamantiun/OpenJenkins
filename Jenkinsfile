@@ -43,7 +43,11 @@ pipeline {
                     jmeterProperties = "-Jjmeter.save.saveservice.output_format=csv"
                     htmlResultsPath = "${WORKSPACE}\\htmlResults"
 
-                    bat "rmdir /s /q ${htmlResultsPath} &&  cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.csv -e -o ${htmlResultsPath} ${jmeterVars} ${jmeterProperties}"
+                    try {
+                        bat "rmdir /s /q ${htmlResultsPath}"
+                    } catch (Exception e) {}
+
+                    bat "cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.csv -e -o ${htmlResultsPath} ${jmeterVars} ${jmeterProperties}"
                 }
             }
         }
