@@ -42,6 +42,10 @@ pipeline {
                     jmeterVars = "-JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}"
                     jmeterProperties = "-Jjmeter.save.saveservice.output_format=csv"
 
+                    try {
+                        bat "del ${WORKSPACE}/TestResult.csv"
+                    } catch (Exception e) {}
+
                     bat "cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.csv ${jmeterVars} ${jmeterProperties}"
                 }
             }
