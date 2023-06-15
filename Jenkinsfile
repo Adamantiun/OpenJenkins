@@ -46,7 +46,7 @@ pipeline {
                         bat "del ${WORKSPACE}/TestResult.xml"
                     } catch (Exception e) {}
 
-                    bat "cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.xml ${jmeterVars} ${jmeterProperties}"
+                    bat "cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.jtl ${jmeterVars} ${jmeterProperties}"
                 }
             }
         }
@@ -54,6 +54,14 @@ pipeline {
             steps {
                 script {
                     performanceReport parsers: [[$class: 'JMeterParser', glob: 'TestResult.xml']], relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5
+                    withAnt(installation: 'Default') {
+                        bat "ant generate-report"
+                        try {bat "ant generate-charts" }
+                        catch (Exception e){
+                            bat "ant install-plugins"
+                            bat "ant generate-charts"
+                        }
+                    }
                     email = params.email
                     if(params.triggerMode == 'Please Select'){
                         load "env_vars.groovy"
