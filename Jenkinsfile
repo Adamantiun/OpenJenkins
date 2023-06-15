@@ -38,7 +38,7 @@ pipeline {
                             testFile = "${WORKSPACE}/${env.requestType}Test.jmx"
                     }
 
-                    bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}  -n -t ${testFile} -l TestResult.jtl"
+                    bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}  -n -t ${testFile} -l TestResult.csv -e -o ${WORKSPACE}/htmlResults"
                 }
             }
         }
@@ -52,8 +52,9 @@ pipeline {
                     }
                     emailext to: email,
                         subject: 'JMeter Results',
-                        body: 'Attached are the JMeter test results.',
-                        attachmentsPattern: 'TestResult.jtl'
+                        body: readFile("${WORKSPACE}/htmlResults"),
+                        attachmentsPattern: 'TestResult.csv',
+                        mimeType: 'text/html'
                 }
             }
         }
@@ -88,11 +89,13 @@ pipeline {
                             echo 'Running the job only once'
                             break
                         case 'Daily':
-                            echo 'Running the job daily at 15:40'
+                            buildHour = '15'
+                            buildMinute = '40'
+                            echo "Running the job daily at ${buildHour}:${buildMinute}"
                             properties([
                                 pipelineTriggers([[
                                         $class: 'hudson.triggers.TimerTrigger',
-                                        spec  : "40 15 * * *"
+                                        spec  : "${buildMinute} ${buildHour} * * *"
                                 ]])
                             ])
                             break
