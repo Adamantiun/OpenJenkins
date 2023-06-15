@@ -51,9 +51,10 @@ pipeline {
                 }
             }
         }
-        stage('Email test results') {
+        stage('Generate and email report') {
             steps {
                 script {
+                    perfReport 'TestResult.csv'
                     email = params.email
                     if(params.triggerMode == 'Please Select'){
                         load "env_vars.groovy"
