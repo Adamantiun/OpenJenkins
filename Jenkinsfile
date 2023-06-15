@@ -40,20 +40,20 @@ pipeline {
 
                     jmeterBinDir = "C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin"
                     jmeterVars = "-JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}"
-                    jmeterProperties = "-Jjmeter.save.saveservice.output_format=csv"
+                    jmeterProperties = "-Jjmeter.save.saveservice.output_format=xml"
 
                     try {
-                        bat "del ${WORKSPACE}/TestResult.csv"
+                        bat "del ${WORKSPACE}/TestResult.xml"
                     } catch (Exception e) {}
 
-                    bat "cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.csv ${jmeterVars} ${jmeterProperties}"
+                    bat "cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.xml ${jmeterVars} ${jmeterProperties}"
                 }
             }
         }
         stage('Generate and email report') {
             steps {
                 script {
-                    perfReport 'TestResult.csv'
+                    performanceReport parsers: [[$class: 'JMeterParser', glob: 'TestResult.xml']], relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5
                     email = params.email
                     if(params.triggerMode == 'Please Select'){
                         load "env_vars.groovy"
@@ -62,7 +62,7 @@ pipeline {
                     emailext to: email,
                         subject: 'JMeter Results',
                         body: readFile("${WORKSPACE}/htmlResults/index.html"),
-                        attachmentsPattern: 'TestResult.csv',
+                        attachmentsPattern: 'TestResult.xml',
                         mimeType: 'text/html'
                 }
             }
