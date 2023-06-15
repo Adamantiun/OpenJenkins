@@ -38,7 +38,7 @@ pipeline {
                             testFile = "${WORKSPACE}/${env.requestType}Test.jmx"
                     }
 
-                    bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}  -n -t ${testFile} -l TestResult.csv -e -o ${WORKSPACE}/htmlResults"
+                    bat "cd C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin && jmeter.bat -JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}  -n -t ${testFile} -l TestResult.csv"
                 }
             }
         }
