@@ -52,7 +52,7 @@ pipeline {
                     }
                     emailext to: email,
                         subject: 'JMeter Results',
-                        body: readFile("${WORKSPACE}/htmlResults"),
+                        body: readFile("${WORKSPACE}/htmlResults/index.html"),
                         attachmentsPattern: 'TestResult.csv',
                         mimeType: 'text/html'
                 }
