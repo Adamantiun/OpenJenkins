@@ -41,8 +41,9 @@ pipeline {
                     jmeterBinDir = "C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin"
                     jmeterVars = "-JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}"
                     jmeterProperties = "-Jjmeter.save.saveservice.output_format=csv"
+                    htmlResultsPath = "${WORKSPACE}\\htmlResults"
 
-                    bat "cd ${jmeterBinDir} &&  jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.csv -e -o ${WORKSPACE}/htmlResults ${jmeterVars} ${jmeterProperties}"
+                    bat "rmdir /s /q ${htmlResultsPath} &&  cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.csv -e -o ${htmlResultsPath} ${jmeterVars} ${jmeterProperties}"
                 }
             }
         }
