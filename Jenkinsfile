@@ -62,9 +62,10 @@ pipeline {
                     emailFisrtHalf = readFile("${WORKSPACE}/emailTemplate/fisrtHalf.txt")
                     emailSecondHalf = readFile("${WORKSPACE}/emailTemplate/secondHalf.txt")
                     csvFile = readFile("${WORKSPACE}/TestResult.csv")
+
                     emailext to: email,
                         subject: 'JMeter Results',
-                        body: emailFisrtHalf + csvFile + emailSecondHalf,
+                        body: "${emailFisrtHalf}${csvFile}${emailSecondHalf}",
                         attachmentsPattern: 'TestResult.csv',
                         mimeType: 'text/html'
                 }
