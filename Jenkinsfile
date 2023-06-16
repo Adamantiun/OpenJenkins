@@ -7,7 +7,9 @@ pipeline {
         string(name: 'pathName', defaultValue: '/fact', description: 'Enter the path to run the tests on')
         choice(name: 'requestType', choices: ['Get', 'Post', 'Put', 'Delete'], description: 'Select the request type to be tested')
         string(name: 'testFile', defaultValue: '', description: 'Enter the name of the test file, if empty will use default files based on ResquestType')
-        choice(name: 'triggerMode', choices: ['Please Select', 'Single Trigger', 'Daily', 'Every Commit', 'Every Minute'], description: 'Select the trigger mode, if not selected will use last used trigger mode')
+        string(name: 'bodyData', defaultValue: '', description: 'Enter body data for the test (ie. JSON), will be ignored it requestType is Get')
+        choice(name: 'triggerMode', choices: ['Please Select', 'Single Trigger', 'Daily', 'Every Commit', 'Every Minute', 'Cron Expression'], description: 'Select the trigger mode, if not selected will use last used trigger mode')
+        string(name: 'cronExpression', defaultValue: '00 12 * * *', description: 'Enter cron expression for more specific trigger timming, will be ignored if triggerMode isn\'t Cron Expression')
         string(name: 'email', defaultValue: 'adam.g.nog@gmail.com', description: 'Enter the email address to send JMeter results')
     }
 
@@ -19,6 +21,7 @@ pipeline {
                     serverName = params.serverName
                     pathName = params.pathName
                     requestType = params.requestType
+                    bodyData = params.bodyData
                     testFile = "${WORKSPACE}/${params.testFile}"
                     if(params.testFile == '')
                         testFile = "${WORKSPACE}/${params.requestType}Test.jmx"
@@ -33,6 +36,7 @@ pipeline {
                         serverName = env.serverName
                         pathName = env.pathName
                         requestType = env.requestType
+                        bodyData = env.bodyData
                         testFile = "${WORKSPACE}/${env.testFile}"
                         if(env.testFile == '')
                             testFile = "${WORKSPACE}/${env.requestType}Test.jmx"
@@ -40,12 +44,14 @@ pipeline {
 
                     jmeterBinDir = "C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin"
                     jmeterVars = "-JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}"
+                    if(requestType != 'Get')
+                        jmeterVars = jmeterVars + " -JbodyData=${bodyData}"
                     jmeterProperties = "-Jjmeter.save.saveservice.output_format=csv"
 
                     try {
-                        bat "del ${WORKSPACE}/TestResult.csv"
+                        bat "del /q ${WORKSPACE}/TestResult.csv"
                     } catch (Exception e) {}
-
+                    
                     bat "cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.csv ${jmeterVars} ${jmeterProperties}"
                 }
             }
@@ -72,9 +78,11 @@ pipeline {
             steps{
                 script{
                     triggerMode = params.triggerMode
+                    cronExpression = params.cronExpression
                     if(triggerMode == 'Please Select'){
                         load "env_vars.groovy"
                         triggerMode = env.triggerMode
+                        cronExpression = env.cronExpression
                     }
                     switch (triggerMode) {
                         case 'Every Minute':
@@ -99,13 +107,22 @@ pipeline {
                             echo 'Running the job only once'
                             break
                         case 'Daily':
-                            buildHour = '15'
-                            buildMinute = '40'
+                            buildHour = '00'
+                            buildMinute = '00'
                             echo "Running the job daily at ${buildHour}:${buildMinute}"
                             properties([
                                 pipelineTriggers([[
                                         $class: 'hudson.triggers.TimerTrigger',
                                         spec  : "${buildMinute} ${buildHour} * * *"
+                                ]])
+                            ])
+                            break
+                        case 'Cron Expression':
+                            echo "Running the job with cron expression ${cronExpression}"
+                            properties([
+                                pipelineTriggers([[
+                                        $class: 'hudson.triggers.TimerTrigger',
+                                        spec  : "${cronExpression}"
                                 ]])
                             ])
                             break
@@ -130,7 +147,9 @@ env.serverName='${params.serverName}'
 env.pathName='${params.pathName}'
 env.requestType='${params.requestType}'
 env.testFile='${params.testFile}'
+env.bodyData='${params.bodyData}'
 env.triggerMode='${params.triggerMode}'
+env.cronExpression='${params.cronExpression}'
 env.email='${params.email}'
 """
 }
