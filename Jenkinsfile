@@ -46,7 +46,7 @@ pipeline {
                             testFile = "${WORKSPACE}/${env.requestType}Test.jmx"
                     }
 
-                    jmeterVars = "-JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}"
+                    jmeterVars = "-JserverName=\"${serverName}\" -JpathName=\"${pathName}\" -JprotocolType=\"${protocol}\""
 
                     if(requestType != 'Get') // adds body data when needed
                         jmeterVars = jmeterVars + " -JbodyData=${bodyData}"
@@ -58,7 +58,7 @@ pipeline {
                     } catch (Exception e) {}
                     
                     // goes to JMeter Bin dir and executes test file
-                    bat "cd ${jmeterBinPath} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.csv ${jmeterVars} ${jmeterProperties}"
+                    bat "cd \"${jmeterBinPath}\" && jmeter.bat -n -t \"${testFile}\" -l \"${WORKSPACE}/TestResult.csv\" ${jmeterVars} ${jmeterProperties}"
                 }
             }
         }
