@@ -40,37 +40,30 @@ pipeline {
 
                     jmeterBinDir = "C:/Users/adanogueira/Desktop/JMeter/apache-jmeter-5.5/bin"
                     jmeterVars = "-JserverName=${serverName} -JpathName=${pathName} -JprotocolType =${protocol}"
-                    jmeterProperties = "-Jjmeter.save.saveservice.output_format=xml"
+                    jmeterProperties = "-Jjmeter.save.saveservice.output_format=csv"
 
                     try {
-                        bat "del ${WORKSPACE}/TestResult.xml"
+                        bat "del ${WORKSPACE}/TestResult.csv"
                     } catch (Exception e) {}
 
-                    bat "cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.jtl ${jmeterVars} ${jmeterProperties}"
+                    bat "cd ${jmeterBinDir} && jmeter.bat -n -t ${testFile} -l ${WORKSPACE}/TestResult.csv ${jmeterVars} ${jmeterProperties}"
                 }
             }
         }
         stage('Generate and email report') {
             steps {
                 script {
-                    //performanceReport parsers: [[$class: 'JMeterParser', glob: 'TestResult.xml']], relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5
-                    withAnt(installation: 'Default') {
-                        bat "ant generate-report"
-                        try {bat "ant generate-charts" }
-                        catch (Exception e){
-                            bat "ant install-plugins"
-                            bat "ant generate-charts"
-                        }
-                    }
+                    //performanceReport parsers: [[$class: 'JMeterParser', glob: 'TestResult.csv']], relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5
                     email = params.email
                     if(params.triggerMode == 'Please Select'){
                         load "env_vars.groovy"
                         email = env.email
                     }
+                    csvFile = readFile("${WORKSPACE}/TestResult.csv")
                     emailext to: email,
                         subject: 'JMeter Results',
-                        body: readFile("${WORKSPACE}/htmlResults/index.html"),
-                        attachmentsPattern: 'TestResult.xml',
+                        body: getEmailBody(csvFile),
+                        attachmentsPattern: 'TestResult.csv',
                         mimeType: 'text/html'
                 }
             }
@@ -140,4 +133,56 @@ env.testFile='${params.testFile}'
 env.triggerMode='${params.triggerMode}'
 env.email='${params.email}'
 """
+}
+
+def getEmailBody(csvFile){
+    fisrtHalf = "<!DOCTYPE html>
+<html>
+<head>
+  <title>JMeter Test Report</title>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <table>
+    <tr>
+      <th>Label</th>
+      <th>Sample Count</th>
+      <th>Average Response Time (ms)</th>
+      <th>Min</th>
+      <th>Max</th>
+      <th>Error %</th>
+    </tr>
+    <script>
+      var csvData = "
+      secondHalf = ";
+
+      var rows = csvData.split('\\n');
+      rows.shift(); // Remove header row
+
+      rows.forEach(function(row) {
+        var columns = row.split(',');
+        var tableRow = document.createElement('tr');
+
+        columns.forEach(function(column) {
+          var tableData = document.createElement('td');
+          tableData.textContent = column;
+          tableRow.appendChild(tableData);
+        });
+
+        document.querySelector('table').appendChild(tableRow);
+      });
+    </script>
+  </table>
+</body>
+</html>"
+    return fisrtHalf + csvFile + secondHalf
 }
