@@ -59,10 +59,12 @@ pipeline {
                         load "env_vars.groovy"
                         email = env.email
                     }
+                    emailFisrtHalf = readFile("${WORKSPACE}/emailTemplate/fisrtHalf.txt")
+                    emailSecondHalf = readFile("${WORKSPACE}/emailTemplate/secondHalf.txt")
                     csvFile = readFile("${WORKSPACE}/TestResult.csv")
                     emailext to: email,
                         subject: 'JMeter Results',
-                        body: getEmailBody(csvFile),
+                        body: emailFisrtHalf + csvFile + emailSecondHalf,
                         attachmentsPattern: 'TestResult.csv',
                         mimeType: 'text/html'
                 }
@@ -133,56 +135,4 @@ env.testFile='${params.testFile}'
 env.triggerMode='${params.triggerMode}'
 env.email='${params.email}'
 """
-}
-
-def getEmailBody(csvFile){
-    fisrtHalf = """<!DOCTYPE html>
-<html>
-<head>
-  <title>JMeter Test Report</title>
-  <style>
-    table {
-      border-collapse: collapse;
-    }
-
-    th, td {
-      border: 1px solid black;
-      padding: 8px;
-    }
-  </style>
-</head>
-<body>
-  <table>
-    <tr>
-      <th>Label</th>
-      <th>Sample Count</th>
-      <th>Average Response Time (ms)</th>
-      <th>Min</th>
-      <th>Max</th>
-      <th>Error %</th>
-    </tr>
-    <script>
-      var csvData = """
-      secondHalf = """;
-
-      var rows = csvData.split('\\n');
-      rows.shift(); // Remove header row
-
-      rows.forEach(function(row) {
-        var columns = row.split(',');
-        var tableRow = document.createElement('tr');
-
-        columns.forEach(function(column) {
-          var tableData = document.createElement('td');
-          tableData.textContent = column;
-          tableRow.appendChild(tableData);
-        });
-
-        document.querySelector('table').appendChild(tableRow);
-      });
-    </script>
-  </table>
-</body>
-</html>"""
-    return fisrtHalf + csvFile + secondHalf
 }

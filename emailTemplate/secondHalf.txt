@@ -1,0 +1,79 @@
+`;
+
+      var rows = csvData.split('\n');
+      var successCount = 0;
+      var totalCount = rows.length;
+
+      rows.forEach(function(row) {
+        var columns = row.split(',');
+        var isSuccess = columns[7] === 'true';
+
+        if (isSuccess) {
+          successCount++;
+        }
+
+        var tableRow = document.createElement('tr');
+
+        columns.forEach(function(column) {
+          var tableData = document.createElement('td');
+          tableData.textContent = column;
+          tableRow.appendChild(tableData);
+        });
+
+        document.getElementsByTagName('table')[0].appendChild(tableRow);
+      });
+
+      var successPercentage = Math.round((successCount / totalCount) * 100);
+
+      var successPercentageDiv = document.getElementById('successPercentage');
+      successPercentageDiv.textContent = successPercentage + '% of tests succeeded';
+
+      if (successPercentage >= 90) {
+        successPercentageDiv.classList.add('success');
+      } else if (successPercentage >= 50) {
+        successPercentageDiv.classList.add('warning');
+      } else {
+        successPercentageDiv.classList.add('failure');
+      }
+
+      var averageRow = document.createElement('tr');
+      averageRow.classList.add('average-row');
+
+      var averageValues = ['Average', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+
+      rows.forEach(function(row, index) {
+        var columns = row.split(',');
+
+        averageValues[1] = calculateAverage(averageValues[1], parseInt(columns[1]), index + 1);
+        averageValues[9] = calculateAverage(averageValues[9], parseInt(columns[9]), index + 1);
+        averageValues[10] = calculateAverage(averageValues[10], parseInt(columns[10]), index + 1);
+        averageValues[11] = calculateAverage(averageValues[11], parseInt(columns[11]), index + 1);
+        averageValues[12] = calculateAverage(averageValues[12], parseInt(columns[12]), index + 1);
+        averageValues[14] = calculateAverage(averageValues[14], parseInt(columns[14]), index + 1);
+        averageValues[15] = calculateAverage(averageValues[15], parseInt(columns[15]), index + 1);
+        averageValues[16] = calculateAverage(averageValues[16], parseInt(columns[16]), index + 1);
+      });
+      averageValues[1] = Math.round(averageValues[1]);
+      averageValues[9] = Math.round(averageValues[9]);
+      averageValues[10] = Math.round(averageValues[10]);
+      averageValues[11] = Math.round(averageValues[11]);
+      averageValues[12] = Math.round(averageValues[12]);
+      averageValues[14] = Math.round(averageValues[14]);
+      averageValues[15] = Math.round(averageValues[15]);
+      averageValues[16] = Math.round(averageValues[16]);
+
+      averageValues.forEach(function(value) {
+        var tableData = document.createElement('td');
+        tableData.textContent = value;
+        averageRow.appendChild(tableData);
+      });
+
+      document.getElementsByTagName('table')[0].appendChild(averageRow);
+
+      function calculateAverage(existingValue, newValue, iteration) {
+        return ((existingValue * (iteration - 1)) + newValue) / iteration;
+      }
+    </script>
+  </table>
+</body>
+</html>
