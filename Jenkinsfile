@@ -136,7 +136,7 @@ env.email='${params.email}'
 }
 
 def getEmailBody(csvFile){
-    fisrtHalf = "<!DOCTYPE html>
+    fisrtHalf = """<!DOCTYPE html>
 <html>
 <head>
   <title>JMeter Test Report</title>
@@ -162,8 +162,8 @@ def getEmailBody(csvFile){
       <th>Error %</th>
     </tr>
     <script>
-      var csvData = "
-      secondHalf = ";
+      var csvData = """
+      secondHalf = """;
 
       var rows = csvData.split('\\n');
       rows.shift(); // Remove header row
@@ -183,6 +183,6 @@ def getEmailBody(csvFile){
     </script>
   </table>
 </body>
-</html>"
+</html>"""
     return fisrtHalf + csvFile + secondHalf
 }
