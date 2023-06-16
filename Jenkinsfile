@@ -76,7 +76,7 @@ pipeline {
                     }
                     
                     // call custom java CVS to HTML converter for html email 
-                    bat "java CSVtoHTMLConverter.java ${WORKSPACE}/TestResult.csv"
+                    bat "java CSVtoHTMLConverter.java \"${WORKSPACE}/TestResult.csv\""
                     
                     // sends email
                     emailext to: email,
