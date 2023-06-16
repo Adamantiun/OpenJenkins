@@ -53,7 +53,7 @@ pipeline {
         stage('Generate and email report') {
             steps {
                 script {
-                    //performanceReport parsers: [[$class: 'JMeterParser', glob: 'TestResult.csv']], relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5
+                    performanceReport parsers: [[$class: 'JMeterParser', glob: 'TestResult.csv']], relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5
                     email = params.email
                     if(params.triggerMode == 'Please Select'){
                         load "env_vars.groovy"
