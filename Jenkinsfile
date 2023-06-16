@@ -59,14 +59,10 @@ pipeline {
                         load "env_vars.groovy"
                         email = env.email
                     }
-                    emailFisrtHalf = readFile("${WORKSPACE}/emailTemplate/fisrtHalf.txt")
-                    emailSecondHalf = readFile("${WORKSPACE}/emailTemplate/secondHalf.txt")
-                    csvFile = readFile("${WORKSPACE}/TestResult.csv")
-                    emailBody = "${emailFisrtHalf}${csvFile}${emailSecondHalf}"
-                    echo emailBody
+                    bat "java CSVtoHTMLConverter.java ${WORKSPACE}/TestResult.csv"
                     emailext to: email,
                         subject: 'JMeter Results',
-                        body: emailBody,
+                        body: readFile("${WORKSPACE}\\report.html"),
                         attachmentsPattern: 'TestResult.csv',
                         mimeType: 'text/html'
                 }
