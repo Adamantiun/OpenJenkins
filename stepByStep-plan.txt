@@ -1,0 +1,16 @@
+Passos:
+
+Downloads:
+	- Java
+	- Jenkins
+	- Jmeter
+Setup Jenkins:
+	- Verificar plugin ext-email
+	- Setup SCM poll
+	- Rodar a primeira vez
+	- Rodar a segunda vez = primeira vez com parâmetros
+
+Explicar:
+	- Parâmetros
+	- Email template
+	- Modificações possíveis à Jenkinsfile
